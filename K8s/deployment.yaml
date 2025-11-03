@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multi-cloud
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: multi-cloud
+  template:
+    metadata:
+      labels:
+        app: multi-cloud
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: "kubernetes.io/hostname"
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: multi-cloud
+      containers:
+      - name: multi-cloud
+        image: rg.fr-par.scw.cloud/kosmos-cr/whoami
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+        - name: registry-secret
